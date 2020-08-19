@@ -1,0 +1,44 @@
+version: '3.1'
+
+services:
+  drup1:
+    image: drupal
+    ports:
+      - '8080:80'
+    networks: 
+      - net2
+    volumes:
+      - drupal-modules:/var/www/html/modules
+      - drupal-profiles:/var/www/html/profiles
+      - drupal-sites:/var/www/html/sites
+      - drupal-themes:/var/www/html/themes
+  mysql1:
+    image: mysql:5.7.31
+    networks: 
+      - net2
+    volumes:
+      - /root/data-mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=drupal
+      - MYSQL_USER=drup
+      - MYSQL_PASSWORD=drup123
+      - MYSQL_ROOT_PASSWORD=123456
+  visualizer:
+    image: dockersamples/visualizer
+    ports:
+      - "8000:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  drupal-modules:
+  drupal-profiles:
+  drupal-sites:
+  drupal-themes:
+
+networks:
+  net2:
+    driver: overlay
